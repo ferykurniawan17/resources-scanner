@@ -26,12 +26,17 @@ function getExtentionFile(path, config) {
     }
   });
 
-  return `${path}/index${file}`;
+  if (file) return `${path}/index${file}`;
+
+  return null;
 }
 
 function extractFilePaths(code, locationFile, config) {
   // Regular expression untuk mencari import statement dan mengekstrak path file
-  const regex = /import\s+(?:[^\s]+)\s+from\s+['"]([^'"]+)['"]/g;
+  const regex = /from\s+['"]([^'"]+)['"]/g;
+  // const regex =
+  //   /import\s+([^\s]+(?:\s*,\s*[^\s]+)*|\{[^}]*\})\s+from\s+['"]([^'"]+)['"]/g;
+
   const filePaths = [];
   let match;
 
@@ -45,13 +50,15 @@ function extractFilePaths(code, locationFile, config) {
     if (alias) {
       const path = match[1].replace(alias, config.alias[alias]);
       const withExtention = getExtentionFile(`${root}/${path}`, config);
-      filePaths.push(withExtention);
+
+      if (withExtention) filePaths.push(withExtention);
     } else {
       if (match[1].startsWith(".")) {
         const fullPath = path.resolve(path.dirname(locationFile), match[1]);
 
         const withExtention = getExtentionFile(fullPath, config);
-        filePaths.push(withExtention);
+
+        if (withExtention) filePaths.push(withExtention);
       }
     }
   }

@@ -20,7 +20,7 @@ function scan(pathFile) {
           keySeparator: false,
           defaultNs: "",
         });
-      },
+      }
     )
     .parseFuncFromString(content);
 

@@ -40,6 +40,7 @@ function getStructure(config) {
 
         if (isWhitelistedFile && !isDirectory) {
           const files = [filePath, ...fileDependencies(filePath, [], config)];
+
           acc.pageFiles = {
             ...acc.pageFiles,
             [filePath]: {
@@ -106,7 +107,7 @@ function getStructure(config) {
   return { allPages, allGlobalFiles };
 }
 
-function mergeKeys(pagePath, allGlobalFiles, config) {
+function mergeKeys(pagePath, allGlobalFiles) {
   const globalKeys = Object.keys(allGlobalFiles).reduce(
     (acc, globalFilePath) => {
       if (pagePath.includes(globalFilePath)) {
