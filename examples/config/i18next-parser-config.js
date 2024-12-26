@@ -1,13 +1,13 @@
 module.exports = {
-  folders: ["app"],
+  folders: ["examples/app"],
   pageFileName: "index",
   whitelistGlobalFiles: [],
   exts: [".js"],
   output: "generated",
   sourceFiles: {
-    en: "app/sources/en.json",
-    fr: "app/sources/fr.json",
-    id: "app/sources/id.json",
+    en: "examples/app/sources/en.json",
+    fr: "examples/app/sources/fr.json",
+    id: "examples/app/sources/id.json",
   },
   alias: {},
   i18next: {

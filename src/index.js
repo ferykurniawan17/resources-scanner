@@ -24,7 +24,7 @@ function execute(config) {
   manageJson.createJsonFiles(pageUrlsKeysMap, config);
 
   console.log("Finish creating json files...");
-  console.log("Path created", Object.keys(pageUrlsKeysMap));
+  console.log("Resources created", Object.keys(pageUrlsKeysMap));
 }
 
 module.exports = execute;

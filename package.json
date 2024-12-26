@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src --out-dir dist",
-    "resources-scanner": "node ./bin/cli.js"
+    "resources-scanner-basic": "node ./bin/cli.js --config examples/config/basic-config.js",
+    "resources-scanner-parser": "node ./bin/cli.js --config examples/config/i18next-parser-config.js",
+    "resources-scanner-group-key": "node ./bin/cli.js --config examples/config/transform-group-key-config.js"
   },
   "repository": {
     "type": "git",
@@ -30,5 +32,15 @@
     "name": "Fery Kurniawan",
     "email": "ferykurniawan.work@gmail.com"
   },
+  "keywords": [
+    "i18n",
+    "i18next",
+    "gettext",
+    "resources"
+  ],
+  "files": [
+    "bin",
+    "dist"
+  ],
   "license": "MIT"
 }

@@ -141,19 +141,33 @@ function convertFilePathsToUrls(allPages, config) {
       pagePath = pagePath.replace(`${root}/${folder}`, "");
     });
 
-    pagePath = pagePath.replace(/\.(tsx|js|jsx|ts|mjs)$/, "");
+    let pageUrl = "";
+    if (config?.transformResourceGroupKey) {
+      // remove first slash
+      pagePath = pagePath.replace(/^\//, "");
+      pageUrl = config.transformResourceGroupKey(pagePath);
+      pageUrl = `/${pageUrl}`;
+    } else {
+      pagePath = pagePath.replace(/\.(tsx|js|jsx|ts|mjs)$/, "");
 
-    // remove last section of the path if it is config.pageFileName
-    const pagePathParts = pagePath.split("/");
-    const lastPart = pagePathParts[pagePathParts.length - 1];
-    if (lastPart === config.pageFileName) {
-      pagePathParts.pop();
+      // remove last section of the path if it is config.pageFileName
+      const pagePathParts = pagePath.split("/");
+      const lastPart = pagePathParts[pagePathParts.length - 1];
+      if (lastPart === config.pageFileName) {
+        pagePathParts.pop();
+      }
+
+      pagePath = pagePathParts.join("/");
+
+      pageUrl = pagePath.replace(/\\/g, "/");
     }
-
-    pagePath = pagePathParts.join("/");
-
-    const pageUrl = pagePath.replace(/\\/g, "/");
-    return { ...acc, [pageUrl]: keys };
+    return {
+      ...acc,
+      [pageUrl]: {
+        ...(acc[pageUrl] ?? {}),
+        ...keys,
+      },
+    };
   }, {});
 
   return pageUrlsKeysMap;

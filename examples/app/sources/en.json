@@ -1,5 +1,7 @@
 {
   "main.pageTitle": "Page title",
+  "main.pageDescription": "Page description",
+  "main.sectionTitle": "Section title",
   "about.pageTitle": "About page title",
   "component.title": "Component title",
   "component.description": "Component description",

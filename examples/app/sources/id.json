@@ -1,5 +1,7 @@
 {
   "main.pageTitle": "Judul halaman",
+  "main.pageDescription": "Deskripsi halaman",
+  "main.sectionTitle": "Part judul",
   "about.pageTitle": "Judul halaman tentang",
   "component.title": "Judul komponen",
   "component.description": "Deskripsi komponen",
