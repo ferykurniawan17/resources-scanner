@@ -1,5 +1,6 @@
 {
   "name": "resources-scanner",
+  "description": "grouping resources by page to splited json file",
   "version": "0.0.1",
   "main": "dist/index.js",
   "scripts": {
@@ -24,5 +25,10 @@
     "babel-preset-minify": "^0.5.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
-  }
+  },
+  "author": {
+    "name": "Fery Kurniawan",
+    "email": "ferykurniawan.work@gmail.com"
+  },
+  "license": "MIT"
 }

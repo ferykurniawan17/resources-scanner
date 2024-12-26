@@ -6,7 +6,7 @@ resources-scanner
 resources-scanner --config your-config-path.js
 ```
 
-### config fils
+### config file
 
 ```js
 module.exports = {
@@ -15,6 +15,8 @@ module.exports = {
 
   // for next js app router
   // pageFileName: "page",
+
+  // e.g ["layout", "error", "not-found", "template"]
   whitelistGlobalFiles: [],
   exts: [".js", ".ts", ".tsx"],
   output: "your-generated-folder",
