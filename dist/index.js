@@ -1,0 +1,3 @@
+"use strict";// eslint-disable-next-line @typescript-eslint/no-var-requires
+var structureScanner=require("./analyzeStructure"),manageJson=require("./jsonCreator");// eslint-disable-next-line @typescript-eslint/no-var-requires
+function execute(a){console.log("Start scanning project structure...");var b=structureScanner.getStructure(a),c=b.allPages,d=b.allGlobalFiles;console.log("Start creating json files...");var e=structureScanner.combineKeys(c,d,a);console.log("Start creating json files...");var f=structureScanner.convertFilePathsToUrls(e,a);console.log("Start creating json files..."),manageJson.createJsonFiles(f,a),console.log("Finish creating json files..."),console.log("Path created",Object.keys(f))}module.exports=execute;

@@ -1,0 +1,10 @@
+{
+  "main.pageTitle": "Titre de la page",
+  "about.pageTitle": "Titre de la page À propos",
+  "component.title": "Titre du composant",
+  "component.description": "Description du composant",
+  "text.wording1": "Ceci est un texte",
+  "text.wording2": "Ceci est un autre texte",
+  "text.wording3": "Ceci est un autre texte",
+  "text.wording4": "Ceci est un autre texte"
+}
