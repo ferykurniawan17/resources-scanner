@@ -45,7 +45,7 @@ function getStructure(config) {
             ...acc.pageFiles,
             [filePath]: {
               files,
-              keys: filesScanner.scan(files),
+              keys: filesScanner.scan(files, config),
             },
           };
         } else if (isWhitelistedGroupFile) {
@@ -53,7 +53,7 @@ function getStructure(config) {
           acc.globalFiles = {
             ...acc.globalFiles,
             files,
-            keys: filesScanner.scan(files),
+            keys: filesScanner.scan(files, config),
           };
         } else {
           if (isDirectory) acc.folders.push(filePath);
