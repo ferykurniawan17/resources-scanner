@@ -12,6 +12,8 @@ or
 npm install -g resources-scanner
 ```
 
+Examples: [Here](https://github.com/ferykurniawan17/resources-scanner/tree/main/examples)
+
 ## Usage CLI
 
 ```sh

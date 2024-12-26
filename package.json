@@ -35,7 +35,7 @@
   "keywords": [
     "i18n",
     "i18next",
-    "gettext",
+    "textResources",
     "resources"
   ],
   "files": [
