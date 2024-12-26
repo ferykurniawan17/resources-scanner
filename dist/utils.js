@@ -1,3 +1,0 @@
-"use strict";// eslint-disable-next-line @typescript-eslint/no-var-requires
-var fs=require("fs"),path=require("path");// eslint-disable-next-line @typescript-eslint/no-var-requires
-function isFileExist(a){return fs.existsSync(a)}function isDirectory(a){return fs.lstatSync(a).isDirectory()}function getFileNameWithoutExt(a){var b=path.basename(a);return b.replace(path.extname(b),"")}function getRootProjectDir(){return process.cwd()}module.exports={isFileExist:isFileExist,isDirectory:isDirectory,getFileNameWithoutExt:getFileNameWithoutExt,getRootProjectDir:getRootProjectDir};

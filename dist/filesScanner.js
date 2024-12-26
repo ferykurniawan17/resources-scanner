@@ -1,2 +1,0 @@
-"use strict";// eslint-disable-next-line @typescript-eslint/no-var-requires
-var fileScanner=require("./fileScanner");function scan(a,b){var c={};return a.forEach(function(a){var d=fileScanner.scan(a,b);Object.assign(c,d)}),c}module.exports={scan:scan};
