@@ -3,8 +3,20 @@ import path from "path";
 import utils from "./utils";
 import fileDependencies from "./fileDependencies";
 import filesScanner from "./filesScanner";
+import { Config, Files, KeysFileMap } from "./type";
 
-function getStructure(config: any) {
+type Structure = {
+  allPages: KeysFileMap;
+  allGlobalFiles: KeysFileMap;
+};
+
+type ResFolder = {
+  folders: Array<string>;
+  pageFiles: KeysFileMap;
+  globalFiles: KeysFileMap;
+};
+
+function getStructure(config: Config): Structure {
   const rootProjectDir = utils.getRootProjectDir();
 
   const pageFileName = config.pageFileName;
@@ -13,93 +25,88 @@ function getStructure(config: any) {
     path.join(rootProjectDir, folder)
   );
 
-  let allPages = {};
-  let allGlobalFiles = {};
+  let allPages: KeysFileMap = {};
+  let allGlobalFiles: KeysFileMap = {};
 
   function getPageFromFolder(
-    pagesGroupFolders: any,
-    currentPages = {},
-    currentGlobalFiles = {},
-    config: any
-  ) {
-    const files: any = fs.readdirSync(pagesGroupFolders);
+    pagesGroupFolders: string,
+    currentPages: KeysFileMap = {},
+    currentGlobalFiles: KeysFileMap = {},
+    config: Config
+  ): [newPages: KeysFileMap, newGlobalFiles: KeysFileMap] {
+    const files: Files = fs.readdirSync(pagesGroupFolders);
 
-    const { pageFiles, globalFiles, folders }: Record<string, any> =
-      files.reduce(
-        (acc: any, file: any) => {
-          const filePath = path.join(pagesGroupFolders, file);
-          const isDirectory = utils.isDirectory(filePath);
+    const { pageFiles, globalFiles, folders }: ResFolder = files.reduce(
+      (acc: any, file: any) => {
+        const filePath = path.join(pagesGroupFolders, file);
+        const isDirectory = utils.isDirectory(filePath);
 
-          if (isDirectory) {
-            acc.folders.push(filePath);
-          } else {
-            const fileWithoutExt = utils.getFileNameWithoutExt(filePath);
-            const isWhitelistedFile =
-              pageFileName && typeof pageFileName === "string"
-                ? pageFileName === fileWithoutExt
-                : true;
-            const isWhitelistedGroupFile =
-              whitelistGlobalFiles.includes(fileWithoutExt);
+        if (isDirectory) {
+          acc.folders.push(filePath);
+        } else {
+          const fileWithoutExt = utils.getFileNameWithoutExt(filePath);
+          const isWhitelistedFile =
+            pageFileName && typeof pageFileName === "string"
+              ? pageFileName === fileWithoutExt
+              : true;
+          const isWhitelistedGroupFile =
+            whitelistGlobalFiles.includes(fileWithoutExt);
 
-            if (isWhitelistedFile) {
-              let isNeedToInclude = true;
-              if (typeof config.pageFileName === "function") {
-                isNeedToInclude = config.pageFileName(
-                  filePath.replace(rootProjectDir, "")
-                );
-              }
+          if (isWhitelistedFile) {
+            let isNeedToInclude = true;
+            if (typeof config.pageFileName === "function") {
+              isNeedToInclude = config.pageFileName(
+                filePath.replace(rootProjectDir, "")
+              );
+            }
 
-              if (isNeedToInclude) {
-                const files = [
-                  filePath,
-                  ...fileDependencies(filePath, [], config),
-                ];
-                acc.pageFiles = {
-                  ...acc.pageFiles,
-                  [filePath]: {
-                    files,
-                    keys: filesScanner.scan(files, config),
-                  },
-                };
-              }
-            } else if (isWhitelistedGroupFile) {
+            if (isNeedToInclude) {
               const files = [
                 filePath,
                 ...fileDependencies(filePath, [], config),
               ];
-              acc.globalFiles = {
-                ...acc.globalFiles,
-                files,
-                keys: filesScanner.scan(files, config),
+              acc.pageFiles = {
+                ...acc.pageFiles,
+                [filePath]: {
+                  files,
+                  keys: filesScanner.scan(files, config),
+                },
               };
             }
+          } else if (isWhitelistedGroupFile) {
+            const files = [filePath, ...fileDependencies(filePath, [], config)];
+
+            acc.globalFiles[pagesGroupFolders] = {
+              ...(acc.globalFiles[pagesGroupFolders] ?? {}),
+              files: [
+                ...(acc.globalFiles[pagesGroupFolders]?.files ?? []),
+                ...files,
+              ],
+              keys: {
+                ...((currentGlobalFiles[pagesGroupFolders]?.keys ?? {}) as any),
+                ...filesScanner.scan(files, config),
+              },
+            };
           }
+        }
 
-          return acc;
-        },
-        { pageFiles: {}, globalFiles: {}, folders: [] }
-      );
+        return acc;
+      },
+      { pageFiles: currentPages, globalFiles: currentGlobalFiles, folders: [] }
+    );
 
-    let newPages = { ...currentPages };
-    let newGlobalFiles: any = { ...currentGlobalFiles };
-
-    // if (pageFile) {
-    //   newPages[pageFile] = pageFile;
-    // }
+    let newPages: KeysFileMap = { ...currentPages };
+    let newGlobalFiles: KeysFileMap = { ...currentGlobalFiles };
 
     if (Object.keys(pageFiles).length) {
       newPages = pageFiles;
     }
 
-    if (Object.keys(globalFiles).length) {
-      newGlobalFiles[pagesGroupFolders] = globalFiles;
-    }
-
-    folders.forEach((folder: any) => {
+    folders.forEach((folder: string) => {
       const [newPagesFromFolder, newGlobalFilesFromFolder] = getPageFromFolder(
         folder,
         newPages,
-        newGlobalFiles,
+        globalFiles,
         config
       );
       newPages = Object.assign(newPages, newPagesFromFolder);
@@ -116,6 +123,7 @@ function getStructure(config: any) {
       allGlobalFiles,
       config
     );
+
     allPages = Object.assign(allPages, pages);
     allGlobalFiles = Object.assign(allGlobalFiles, globalFiles);
   });

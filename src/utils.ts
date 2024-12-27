@@ -14,7 +14,7 @@ function getFileNameWithoutExt(filePath: string) {
   return fileName.replace(path.extname(fileName), "");
 }
 
-function getRootProjectDir() {
+function getRootProjectDir(): string {
   return process.cwd();
 }
 

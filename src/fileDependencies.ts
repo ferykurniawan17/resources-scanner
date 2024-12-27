@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import utils from "./utils";
+import { Files, KeysMap } from "./type";
 
 function getExtentionFile(path: any, config: any) {
   let file = config.exts.find((ext: any) => {
@@ -63,7 +64,7 @@ function extractFilePaths(code: any, locationFile: any, config: any) {
   return filePaths;
 }
 
-function loadFileDependency(pathFile: any, paths: any, config: any) {
+function loadFileDependency(pathFile: any, paths: any, config: any): Files {
   const codeString = fs.readFileSync(pathFile, "utf-8");
   const filePaths = extractFilePaths(codeString, pathFile, config);
 
