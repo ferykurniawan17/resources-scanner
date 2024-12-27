@@ -110,7 +110,9 @@ module.exports = {
 
 Allow multiple folder group pages
 
-### pageFileName
+### pageFileName (Optional)
+
+`type: undefined | string | func`
 
 ```js
 {
@@ -119,7 +121,20 @@ Allow multiple folder group pages
 }
 ```
 
-The name of the page file, typically used to reference the main entry point of the page.
+The name of the page file, typically used to reference the main entry point of the page. If you do not specify `pageFileName`, all files within the folder will be considered as pages.
+
+You can provide a function to `pageFileName` to filter and determine if a file is considered a page. This function receives the file path as an argument and should return a boolean indicating whether the file is a page.
+
+```js
+{
+  ...,
+  pageFileName: function (filePath) {
+    // Implement your logic to determine if the file is a page
+    const isPage = filePath.includes('page');
+    return isPage;
+  }
+}
+```
 
 ### whitelistGlobalFiles
 
@@ -181,7 +196,7 @@ Specify the paths to the source files for different languages. These files conta
 
 Specify path aliases to simplify module imports. This allows you to use shorter paths when importing modules, making the code cleaner and easier to maintain.
 
-### i18next.transform
+### i18next.transform (Optional)
 
 ```js
 {
@@ -232,7 +247,9 @@ this `transform` required to return the keys
 return parser.get();
 ```
 
-### i18next.list
+### i18next.list (Optional)
+
+`default ["t", "i18next.t", "i18n.t"]`
 
 ```js
 {
@@ -245,7 +262,7 @@ list - An array of strings representing different ways to access the translation
 
 It includes shorthand notations and fully qualified names to ensure compatibility with various usage patterns.
 
-### transformResourceGroupKey
+### transformResourceGroupKey (Optional)
 
 ```js
 {
