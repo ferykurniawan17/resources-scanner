@@ -38,21 +38,34 @@ function getStructure(config) {
           acc.folders.push(filePath);
         } else {
           const fileWithoutExt = utils.getFileNameWithoutExt(filePath);
-          const isWhitelistedFile = pageFileName
-            ? pageFileName === fileWithoutExt
-            : true;
+          const isWhitelistedFile =
+            pageFileName && typeof pageFileName === "string"
+              ? pageFileName === fileWithoutExt
+              : true;
           const isWhitelistedGroupFile =
             whitelistGlobalFiles.includes(fileWithoutExt);
 
           if (isWhitelistedFile) {
-            const files = [filePath, ...fileDependencies(filePath, [], config)];
-            acc.pageFiles = {
-              ...acc.pageFiles,
-              [filePath]: {
-                files,
-                keys: filesScanner.scan(files, config),
-              },
-            };
+            let isNeedToInclude = true;
+            if (typeof config.pageFileName === "function") {
+              isNeedToInclude = config.pageFileName(
+                filePath.replace(rootProjectDir, "")
+              );
+            }
+
+            if (isNeedToInclude) {
+              const files = [
+                filePath,
+                ...fileDependencies(filePath, [], config),
+              ];
+              acc.pageFiles = {
+                ...acc.pageFiles,
+                [filePath]: {
+                  files,
+                  keys: filesScanner.scan(files, config),
+                },
+              };
+            }
           } else if (isWhitelistedGroupFile) {
             const files = [filePath, ...fileDependencies(filePath, [], config)];
             acc.globalFiles = {
@@ -159,13 +172,15 @@ function convertFilePathsToUrls(allPages, config) {
       const lastPart = pagePathParts[pagePathParts.length - 1];
 
       if (config.pageFileName) {
-        if (lastPart === config.pageFileName) {
-          pagePathParts.pop();
+        if (typeof config.pageFileName === "string") {
+          if (lastPart === config.pageFileName) {
+            pagePathParts.pop();
+          }
         }
-      } else {
-        if (pagePathParts[pagePathParts.length - 1] === "index")
-          pagePathParts.pop();
       }
+
+      if (pagePathParts[pagePathParts.length - 1] === "index")
+        pagePathParts.pop();
 
       pagePath = pagePathParts.join("/");
       pageUrl = pagePath.replace(/\\/g, "/");

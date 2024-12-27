@@ -1,8 +1,13 @@
+const filterRegex = [/components/, /tests/];
+
 module.exports = {
-  folders: ["examples/app/pages"],
-  pageFileName: "index",
+  folders: ["examples/pages"],
+  pageFileName: (path) => {
+    const isFiltered = filterRegex.some((regex) => regex.test(path));
+    return !isFiltered;
+  },
   whitelistGlobalFiles: [],
-  exts: [".js"],
+  exts: [".js", ".tsx"],
   output: "generated",
   sourceFiles: {
     en: "examples/app/sources/en.json",

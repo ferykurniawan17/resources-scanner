@@ -1,5 +1,5 @@
 module.exports = {
-  folders: ["examples/app"],
+  folders: ["examples/app/pages"],
   pageFileName: "index",
   whitelistGlobalFiles: [],
   exts: [".js"],
