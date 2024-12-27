@@ -36,7 +36,8 @@
     "i18n",
     "i18next",
     "textResources",
-    "resources"
+    "resources",
+    "cli"
   ],
   "files": [
     "bin",

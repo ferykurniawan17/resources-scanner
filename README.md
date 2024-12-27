@@ -1,3 +1,5 @@
+#
+
 # Getting Started
 
 ## Installation
@@ -14,6 +16,8 @@ npm install -g resources-scanner
 
 Examples: [Here](https://github.com/ferykurniawan17/resources-scanner/tree/main/examples)
 
+This library uses [i18next-scanner](https://www.npmjs.com/package/i18next-scanner) :bow: to collect resources. i18next-scanner is a tool that scans your codebase for translation keys and extracts them into resource files.
+
 ## Usage CLI
 
 ```sh
@@ -28,10 +32,9 @@ config
 {
   ...,
   locales: ["en", "id"],
+  exts: [".js", ".ts", ".tsx"],
   output: "json-sources",
   pageFileName: "page",
-
-  // without transformResourceGroupKey
 }
 
 ```
@@ -219,9 +222,7 @@ Specify path aliases to simplify module imports. This allows you to use shorter 
 }
 ```
 
-The `transform` function is used to customize how the content is parsed and transformed. In this example,
-
-use standard API of [i18next-scanner](https://github.com/i18next/i18next-scanner/blob/master/README.md) to parse the content.
+The `transform` function is used to customize how the content is parsed and transformed. In this example, use standard API of [i18next-scanner](https://github.com/i18next/i18next-scanner/blob/master/README.md) to parse the content.
 
 this `transform` required to return the keys
 
@@ -255,8 +256,12 @@ It includes shorthand notations and fully qualified names to ensure compatibilit
 
     return removeSlash;
   },
+}
+```
 
-  // Output
+Output:
+
+```
   - json-sources
     - pages_about-us_page
       - en.json
@@ -267,7 +272,6 @@ It includes shorthand notations and fully qualified names to ensure compatibilit
     - pages_article_bussines_page
       - en.json
       - id.json
-}
 ```
 
 Transform the path to match your URL structure.
