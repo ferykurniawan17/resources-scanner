@@ -34,6 +34,8 @@ function getStructure(config: Config): Structure {
     currentGlobalFiles: KeysFileMap = {},
     config: Config
   ): [newPages: KeysFileMap, newGlobalFiles: KeysFileMap] {
+    console.log("\x1b[34m%s\x1b[0m", "Scanning folder", pagesGroupFolders);
+
     const files: Files = fs.readdirSync(pagesGroupFolders);
 
     const { pageFiles, globalFiles, folders }: ResFolder = files.reduce(

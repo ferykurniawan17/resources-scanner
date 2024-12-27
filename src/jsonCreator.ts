@@ -13,7 +13,15 @@ function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
     (acc: Record<string, KeysMap>, key) => {
       const filePath = path.join(rootProjectDir, config.sourceFiles[key]);
       if (fs.existsSync(filePath)) {
-        acc[key] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+        try {
+          const messages = fs.readFileSync(filePath, "utf8");
+          acc[key] = JSON.parse(messages);
+        } catch (e) {
+          console.log("\x1b[31m%s\x1b[0m", "Failed Load JSON File:", filePath);
+          console.log("\x1b[31m%s\x1b[0m", e);
+
+          process.exit(1);
+        }
       }
       return acc;
     },
@@ -32,17 +40,39 @@ function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
         return acc;
       }, {});
 
-      const fileCreated = `${rootProjectDir}/${config.output}${url}/${locale}.json`;
+      const outputFile = `${config.output}${url}/${locale}.json`;
+      const fileCreated = `${rootProjectDir}/${outputFile}`;
 
-      // create json file
-      // create folder if not exists
       const folderPath = path.dirname(fileCreated);
 
       if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath, { recursive: true });
+        try {
+          fs.mkdirSync(folderPath, { recursive: true });
+        } catch (e) {
+          console.log(
+            "\x1b[31m%s\x1b[0m",
+            "Failed Creation Folder:",
+            folderPath
+          );
+          console.log("\x1b[31m%s\x1b[0m", e);
+
+          process.exit(1);
+        }
       }
 
-      fs.writeFileSync(fileCreated, JSON.stringify(json, null, 2));
+      try {
+        fs.writeFileSync(fileCreated, JSON.stringify(json, null, 2));
+        console.log("\x1b[34m%s\x1b[0m", "Created JSON file:", outputFile);
+      } catch (e) {
+        console.log(
+          "\x1b[31m%s\x1b[0m",
+          "Failed Creation JSON File:",
+          outputFile
+        );
+        console.log("\x1b[31m%s\x1b[0m", e);
+
+        process.exit(1);
+      }
     });
   });
 }
