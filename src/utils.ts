@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { Config, Ext } from "./type";
+import { Config, Ext, KeysFileMap, KeysMap } from "./type";
 
 function isFileExist(filePath: string) {
   return fs.existsSync(filePath);
@@ -45,10 +45,40 @@ function getExtentionFile(path: string, config: Config) {
   return null;
 }
 
+function mergeKeys(pagePath: string, allGlobalFiles: KeysFileMap) {
+  const globalKeys = Object.keys(allGlobalFiles).reduce(
+    (acc, globalFilePath) => {
+      if (pagePath.includes(globalFilePath)) {
+        return { ...acc, ...allGlobalFiles[globalFilePath].keys };
+      }
+      return acc;
+    },
+    {}
+  );
+
+  return globalKeys;
+}
+
+function combineKeys(
+  allPages: KeysFileMap,
+  allGlobalFiles: KeysFileMap
+): Record<string, KeysMap> {
+  const combinedKeys = Object.keys(allPages).reduce((acc, pagePath) => {
+    const pageKeys: KeysMap = allPages[pagePath].keys as KeysMap;
+    const globalKeys = mergeKeys(pagePath, allGlobalFiles);
+    const keys = { ...pageKeys, ...globalKeys };
+    return { ...acc, [pagePath]: keys };
+  }, {});
+
+  return combinedKeys;
+}
+
 export default {
   isFileExist,
   isDirectory,
   getFileNameWithoutExt,
   getRootProjectDir,
   getExtentionFile,
+  mergeKeys,
+  combineKeys,
 };

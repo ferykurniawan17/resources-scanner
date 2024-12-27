@@ -131,34 +131,6 @@ function getStructure(config: Config): Structure {
   return { allPages, allGlobalFiles };
 }
 
-function mergeKeys(pagePath: string, allGlobalFiles: KeysFileMap) {
-  const globalKeys = Object.keys(allGlobalFiles).reduce(
-    (acc, globalFilePath) => {
-      if (pagePath.includes(globalFilePath)) {
-        return { ...acc, ...allGlobalFiles[globalFilePath].keys };
-      }
-      return acc;
-    },
-    {}
-  );
-
-  return globalKeys;
-}
-
-function combineKeys(
-  allPages: KeysFileMap,
-  allGlobalFiles: KeysFileMap
-): Record<string, KeysMap> {
-  const combinedKeys = Object.keys(allPages).reduce((acc, pagePath) => {
-    const pageKeys: KeysMap = allPages[pagePath].keys as KeysMap;
-    const globalKeys = mergeKeys(pagePath, allGlobalFiles);
-    const keys = { ...pageKeys, ...globalKeys };
-    return { ...acc, [pagePath]: keys };
-  }, {});
-
-  return combinedKeys;
-}
-
 function convertFilePathsToUrls(
   allPages: Record<string, KeysMap>,
   config: Config
@@ -215,6 +187,5 @@ function convertFilePathsToUrls(
 
 export default {
   getStructure,
-  combineKeys,
   convertFilePathsToUrls,
 };

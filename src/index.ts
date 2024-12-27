@@ -1,5 +1,6 @@
 import structureScanner from "./analyzeStructure";
 import manageJson from "./jsonCreator";
+import utils from "./utils";
 import { Config } from "./type";
 
 function execute(config: Config) {
@@ -8,7 +9,7 @@ function execute(config: Config) {
   const { allPages, allGlobalFiles } = structureScanner.getStructure(config);
 
   console.log("Start creating json files...");
-  const pageKeyMap = structureScanner.combineKeys(allPages, allGlobalFiles);
+  const pageKeyMap = utils.combineKeys(allPages, allGlobalFiles);
 
   console.log("Start creating json files...");
   const pageUrlsKeysMap = structureScanner.convertFilePathsToUrls(
