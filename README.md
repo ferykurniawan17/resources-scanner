@@ -2,6 +2,10 @@
 
 # Getting Started
 
+This library is used to distribute JSON resources to all pages, ensuring that only the necessary keys for each page are included. It helps in organizing and managing translation keys efficiently by extracting the relevant keys for each page.
+
+This library uses [i18next-scanner](https://www.npmjs.com/package/i18next-scanner) :bow: to collect resources. i18next-scanner is a tool that scans your codebase for translation keys and extracts them into resource files.
+
 ## Installation
 
 ```sh
@@ -15,8 +19,6 @@ npm install -g resources-scanner
 ```
 
 Examples: [Here](https://github.com/ferykurniawan17/resources-scanner/tree/main/examples)
-
-This library uses [i18next-scanner](https://www.npmjs.com/package/i18next-scanner) :bow: to collect resources. i18next-scanner is a tool that scans your codebase for translation keys and extracts them into resource files.
 
 ## Usage CLI
 
