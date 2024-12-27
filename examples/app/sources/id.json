@@ -3,6 +3,8 @@
   "main.pageDescription": "Deskripsi halaman",
   "main.sectionTitle": "Part judul",
   "about.pageTitle": "Judul halaman tentang",
+  "post.mainPageTitle": "Judul Post halaman utama",
+  "post.detailPageTitle": "Judul Post Detail Page",
   "component.title": "Judul komponen",
   "component.description": "Deskripsi komponen",
   "text.wording1": "Ini adalah teks",

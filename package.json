@@ -5,9 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "babel src --out-dir dist",
-    "resources-scanner-basic": "node ./bin/cli.js --config examples/config/basic-config.js",
-    "resources-scanner-parser": "node ./bin/cli.js --config examples/config/i18next-parser-config.js",
-    "resources-scanner-group-key": "node ./bin/cli.js --config examples/config/transform-group-key-config.js"
+    "resources-scanner:basic": "node ./bin/cli.js --config examples/config/basic-config.js",
+    "resources-scanner:parser": "node ./bin/cli.js --config examples/config/i18next-parser-config.js",
+    "resources-scanner:group-key": "node ./bin/cli.js --config examples/config/transform-group-key-config.js",
+    "resources-scanner:page-name": "node ./bin/cli.js --config examples/config/file-page-name-config.js"
   },
   "repository": {
     "type": "git",

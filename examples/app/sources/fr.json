@@ -3,6 +3,8 @@
   "main.pageDescription": "Description de la page",
   "main.sectionTitle": "Titre de la section",
   "about.pageTitle": "Titre de la page À propos",
+  "post.mainPageTitle": "Titre de la page principale du post",
+  "post.detailPageTitle": "Titre de la page de détail du post",
   "component.title": "Titre du composant",
   "component.description": "Description du composant",
   "text.wording1": "Ceci est un texte",

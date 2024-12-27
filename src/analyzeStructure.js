@@ -32,31 +32,35 @@ function getStructure(config) {
     const { pageFiles, globalFiles, folders } = files.reduce(
       (acc, file) => {
         const filePath = path.join(pagesGroupFolders, file);
-        const fileWithoutExt = utils.getFileNameWithoutExt(filePath);
-        const isWhitelistedFile = pageFileName === fileWithoutExt;
-        const isWhitelistedGroupFile =
-          whitelistGlobalFiles.includes(fileWithoutExt);
         const isDirectory = utils.isDirectory(filePath);
 
-        if (isWhitelistedFile && !isDirectory) {
-          const files = [filePath, ...fileDependencies(filePath, [], config)];
+        if (isDirectory) {
+          acc.folders.push(filePath);
+        } else {
+          const fileWithoutExt = utils.getFileNameWithoutExt(filePath);
+          const isWhitelistedFile = pageFileName
+            ? pageFileName === fileWithoutExt
+            : true;
+          const isWhitelistedGroupFile =
+            whitelistGlobalFiles.includes(fileWithoutExt);
 
-          acc.pageFiles = {
-            ...acc.pageFiles,
-            [filePath]: {
+          if (isWhitelistedFile) {
+            const files = [filePath, ...fileDependencies(filePath, [], config)];
+            acc.pageFiles = {
+              ...acc.pageFiles,
+              [filePath]: {
+                files,
+                keys: filesScanner.scan(files, config),
+              },
+            };
+          } else if (isWhitelistedGroupFile) {
+            const files = [filePath, ...fileDependencies(filePath, [], config)];
+            acc.globalFiles = {
+              ...acc.globalFiles,
               files,
               keys: filesScanner.scan(files, config),
-            },
-          };
-        } else if (isWhitelistedGroupFile) {
-          const files = [filePath, ...fileDependencies(filePath, [], config)];
-          acc.globalFiles = {
-            ...acc.globalFiles,
-            files,
-            keys: filesScanner.scan(files, config),
-          };
-        } else {
-          if (isDirectory) acc.folders.push(filePath);
+            };
+          }
         }
 
         return acc;
@@ -153,12 +157,17 @@ function convertFilePathsToUrls(allPages, config) {
       // remove last section of the path if it is config.pageFileName
       const pagePathParts = pagePath.split("/");
       const lastPart = pagePathParts[pagePathParts.length - 1];
-      if (lastPart === config.pageFileName) {
-        pagePathParts.pop();
+
+      if (config.pageFileName) {
+        if (lastPart === config.pageFileName) {
+          pagePathParts.pop();
+        }
+      } else {
+        if (pagePathParts[pagePathParts.length - 1] === "index")
+          pagePathParts.pop();
       }
 
       pagePath = pagePathParts.join("/");
-
       pageUrl = pagePath.replace(/\\/g, "/");
     }
     return {

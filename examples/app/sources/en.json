@@ -3,6 +3,8 @@
   "main.pageDescription": "Page description",
   "main.sectionTitle": "Section title",
   "about.pageTitle": "About page title",
+  "post.mainPageTitle": "Main Page Post Title",
+  "post.detailPageTitle": "Detail Page Post Title",
   "component.title": "Component title",
   "component.description": "Component description",
   "text.wording1": "This is a text",
