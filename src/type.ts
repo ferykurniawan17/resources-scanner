@@ -1,6 +1,6 @@
 type PageFileName = string | ((path: string) => boolean) | undefined;
 
-type Exts = `.${string}`;
+export type Ext = `.${string}`;
 
 type SourceFiles = Record<string, `${string}.json`>;
 
@@ -21,7 +21,7 @@ export type Config = {
   folders: Array<string>;
   pageFileName?: PageFileName;
   whitelistGlobalFiles: Array<string>;
-  exts: Array<Exts>;
+  exts: Array<Ext>;
   output: string;
   sourceFiles: SourceFiles;
   alias: Record<string, string>;
@@ -38,4 +38,4 @@ export type FilesMap = {
   keys?: KeysMap;
 };
 
-export type KeysFileMap = Record<string, KeysMap>;
+export type KeysFileMap = Record<string, FilesMap>;

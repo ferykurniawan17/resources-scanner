@@ -1,15 +1,16 @@
 import fs from "fs";
 import path from "path";
 import utils from "./utils";
+import { Config, KeysMap } from "./type";
 
-function createJsonFiles(urlsKeysMap: any, config: any) {
+function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
   const rootProjectDir = utils.getRootProjectDir();
 
   config.sourceFiles = config.sourceFiles || {};
 
   // load existing json files
   const existingJsonFiles = Object.keys(config.sourceFiles).reduce(
-    (acc: any, key) => {
+    (acc: Record<string, KeysMap>, key) => {
       const filePath = path.join(rootProjectDir, config.sourceFiles[key]);
       if (fs.existsSync(filePath)) {
         acc[key] = JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -26,7 +27,7 @@ function createJsonFiles(urlsKeysMap: any, config: any) {
     Object.keys(config.sourceFiles).forEach((locale) => {
       const existingKeys = existingJsonFiles[locale] || {};
 
-      const json = Object.keys(keys).reduce((acc: any, key) => {
+      const json = Object.keys(keys).reduce((acc: KeysMap, key) => {
         acc[key] = existingKeys[key] || key;
         return acc;
       }, {});

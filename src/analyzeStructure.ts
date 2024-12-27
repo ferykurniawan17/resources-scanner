@@ -3,7 +3,7 @@ import path from "path";
 import utils from "./utils";
 import fileDependencies from "./fileDependencies";
 import filesScanner from "./filesScanner";
-import { Config, Files, KeysFileMap } from "./type";
+import { Config, Files, KeysFileMap, KeysMap } from "./type";
 
 type Structure = {
   allPages: KeysFileMap;
@@ -21,7 +21,7 @@ function getStructure(config: Config): Structure {
 
   const pageFileName = config.pageFileName;
   const whitelistGlobalFiles = config.whitelistGlobalFiles;
-  const pagesGroupFolders = config.folders.map((folder: any) =>
+  const pagesGroupFolders = config.folders.map((folder: string) =>
     path.join(rootProjectDir, folder)
   );
 
@@ -37,7 +37,7 @@ function getStructure(config: Config): Structure {
     const files: Files = fs.readdirSync(pagesGroupFolders);
 
     const { pageFiles, globalFiles, folders }: ResFolder = files.reduce(
-      (acc: any, file: any) => {
+      (acc: ResFolder, file: string) => {
         const filePath = path.join(pagesGroupFolders, file);
         const isDirectory = utils.isDirectory(filePath);
 
@@ -83,7 +83,7 @@ function getStructure(config: Config): Structure {
                 ...files,
               ],
               keys: {
-                ...((currentGlobalFiles[pagesGroupFolders]?.keys ?? {}) as any),
+                ...(currentGlobalFiles[pagesGroupFolders]?.keys ?? {}),
                 ...filesScanner.scan(files, config),
               },
             };
@@ -116,7 +116,7 @@ function getStructure(config: Config): Structure {
     return [newPages, newGlobalFiles];
   }
 
-  pagesGroupFolders.forEach((pagesGroupFolder: any) => {
+  pagesGroupFolders.forEach((pagesGroupFolder: string) => {
     const [pages, globalFiles] = getPageFromFolder(
       pagesGroupFolder,
       allPages,
@@ -131,7 +131,7 @@ function getStructure(config: Config): Structure {
   return { allPages, allGlobalFiles };
 }
 
-function mergeKeys(pagePath: any, allGlobalFiles: any) {
+function mergeKeys(pagePath: string, allGlobalFiles: KeysFileMap) {
   const globalKeys = Object.keys(allGlobalFiles).reduce(
     (acc, globalFilePath) => {
       if (pagePath.includes(globalFilePath)) {
@@ -145,9 +145,12 @@ function mergeKeys(pagePath: any, allGlobalFiles: any) {
   return globalKeys;
 }
 
-function combineKeys(allPages: any, allGlobalFiles: any) {
+function combineKeys(
+  allPages: KeysFileMap,
+  allGlobalFiles: KeysFileMap
+): Record<string, KeysMap> {
   const combinedKeys = Object.keys(allPages).reduce((acc, pagePath) => {
-    const pageKeys = allPages[pagePath].keys;
+    const pageKeys: KeysMap = allPages[pagePath].keys as KeysMap;
     const globalKeys = mergeKeys(pagePath, allGlobalFiles);
     const keys = { ...pageKeys, ...globalKeys };
     return { ...acc, [pagePath]: keys };
@@ -156,50 +159,56 @@ function combineKeys(allPages: any, allGlobalFiles: any) {
   return combinedKeys;
 }
 
-function convertFilePathsToUrls(allPages: any, config: any) {
+function convertFilePathsToUrls(
+  allPages: Record<string, KeysMap>,
+  config: Config
+) {
   const root = utils.getRootProjectDir();
-  const pageUrlsKeysMap = Object.keys(allPages).reduce((acc: any, pagePath) => {
-    const keys = allPages[pagePath];
+  const pageUrlsKeysMap = Object.keys(allPages).reduce(
+    (acc: Record<string, KeysMap>, pagePath: string) => {
+      const keys = allPages[pagePath];
 
-    config.folders.forEach((folder: any) => {
-      pagePath = pagePath.replace(`${root}/${folder}`, "");
-    });
+      config.folders.forEach((folder: string) => {
+        pagePath = pagePath.replace(`${root}/${folder}`, "");
+      });
 
-    let pageUrl = "";
-    if (config?.transformResourceGroupKey) {
-      // remove first slash
-      pagePath = pagePath.replace(/^\//, "");
-      pageUrl = config.transformResourceGroupKey(pagePath);
-      pageUrl = `/${pageUrl}`;
-    } else {
-      pagePath = pagePath.replace(/\.(tsx|js|jsx|ts|mjs)$/, "");
+      let pageUrl = "";
+      if (config?.transformResourceGroupKey) {
+        // remove first slash
+        pagePath = pagePath.replace(/^\//, "");
+        pageUrl = config.transformResourceGroupKey(pagePath);
+        pageUrl = `/${pageUrl}`;
+      } else {
+        pagePath = pagePath.replace(/\.(tsx|js|jsx|ts|mjs)$/, "");
 
-      // remove last section of the path if it is config.pageFileName
-      const pagePathParts = pagePath.split("/");
-      const lastPart = pagePathParts[pagePathParts.length - 1];
+        // remove last section of the path if it is config.pageFileName
+        const pagePathParts = pagePath.split("/");
+        const lastPart = pagePathParts[pagePathParts.length - 1];
 
-      if (config.pageFileName) {
-        if (typeof config.pageFileName === "string") {
-          if (lastPart === config.pageFileName) {
-            pagePathParts.pop();
+        if (config.pageFileName) {
+          if (typeof config.pageFileName === "string") {
+            if (lastPart === config.pageFileName) {
+              pagePathParts.pop();
+            }
           }
         }
+
+        if (pagePathParts[pagePathParts.length - 1] === "index")
+          pagePathParts.pop();
+
+        pagePath = pagePathParts.join("/");
+        pageUrl = pagePath.replace(/\\/g, "/");
       }
-
-      if (pagePathParts[pagePathParts.length - 1] === "index")
-        pagePathParts.pop();
-
-      pagePath = pagePathParts.join("/");
-      pageUrl = pagePath.replace(/\\/g, "/");
-    }
-    return {
-      ...acc,
-      [pageUrl]: {
-        ...(acc[pageUrl] ?? {}),
-        ...keys,
-      },
-    };
-  }, {});
+      return {
+        ...acc,
+        [pageUrl]: {
+          ...(acc[pageUrl] ?? {}),
+          ...keys,
+        },
+      };
+    },
+    {}
+  );
 
   return pageUrlsKeysMap;
 }

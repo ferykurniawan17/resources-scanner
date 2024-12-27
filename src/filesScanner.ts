@@ -1,8 +1,9 @@
 import fs from "fs";
 // @ts-ignore
 import { Parser } from "i18next-scanner";
+import { Config } from "./type";
 
-function filelScan(pathFile: any, config: any) {
+function filelScan(pathFile: string, config: Config) {
   const parser = new Parser();
   const content = fs.readFileSync(pathFile, "utf-8");
 
@@ -16,7 +17,7 @@ function filelScan(pathFile: any, config: any) {
         {
           list: config?.i18next?.list ?? ["t", "i18next.t", "i18n.t"],
         },
-        (key: any, options: any) => {
+        (key: string, options: any) => {
           parser.set(key, {
             ...options,
             nsSeparator: false,
@@ -36,9 +37,9 @@ function filelScan(pathFile: any, config: any) {
   return {};
 }
 
-function scan(files: any, config: any) {
+function scan(files: Array<string>, config: Config) {
   const keys = {};
-  files.forEach((file: any) => {
+  files.forEach((file: string) => {
     const fileKeys = filelScan(file, config);
     Object.assign(keys, fileKeys);
   });

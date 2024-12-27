@@ -1,39 +1,11 @@
 import fs from "fs";
 import path from "path";
 import utils from "./utils";
-import { Files, KeysMap } from "./type";
+import { Config, Files } from "./type";
 
-function getExtentionFile(path: any, config: any) {
-  let file = config.exts.find((ext: any) => {
-    try {
-      fs.accessSync(`${path}${ext}`);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  });
-
-  if (file) return `${path}${file}`;
-
-  file = config.exts.find((ext: any) => {
-    try {
-      fs.accessSync(`${path}/index${ext}`);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  });
-
-  if (file) return `${path}/index${file}`;
-
-  return null;
-}
-
-function extractFilePaths(code: any, locationFile: any, config: any) {
+function extractFilePaths(code: string, locationFile: string, config: Config) {
   // Regular expression untuk mencari import statement dan mengekstrak path file
   const regex = /from\s+['"]([^'"]+)['"]/g;
-  // const regex =
-  //   /import\s+([^\s]+(?:\s*,\s*[^\s]+)*|\{[^}]*\})\s+from\s+['"]([^'"]+)['"]/g;
 
   const filePaths: Array<string> = [];
   let match: any;
@@ -47,14 +19,13 @@ function extractFilePaths(code: any, locationFile: any, config: any) {
 
     if (alias) {
       const path = match[1].replace(alias, config.alias[alias]);
-      const withExtention = getExtentionFile(`${root}/${path}`, config);
+      const withExtention = utils.getExtentionFile(`${root}/${path}`, config);
 
       if (withExtention) filePaths.push(withExtention);
     } else {
       if (match[1].startsWith(".")) {
         const fullPath = path.resolve(path.dirname(locationFile), match[1]);
-
-        const withExtention = getExtentionFile(fullPath, config);
+        const withExtention = utils.getExtentionFile(fullPath, config);
 
         if (withExtention) filePaths.push(withExtention);
       }
@@ -64,7 +35,11 @@ function extractFilePaths(code: any, locationFile: any, config: any) {
   return filePaths;
 }
 
-function loadFileDependency(pathFile: any, paths: any, config: any): Files {
+function loadFileDependency(
+  pathFile: string,
+  paths: Array<string>,
+  config: Config
+): Files {
   const codeString = fs.readFileSync(pathFile, "utf-8");
   const filePaths = extractFilePaths(codeString, pathFile, config);
 
