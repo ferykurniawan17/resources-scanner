@@ -1,17 +1,15 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require("fs");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require("path");
+import fs from "fs";
+import path from "path";
 
-function isFileExist(filePath) {
+function isFileExist(filePath: string) {
   return fs.existsSync(filePath);
 }
 
-function isDirectory(filePath) {
+function isDirectory(filePath: string) {
   return fs.lstatSync(filePath).isDirectory();
 }
 
-function getFileNameWithoutExt(filePath) {
+function getFileNameWithoutExt(filePath: string) {
   const fileName = path.basename(filePath);
   return fileName.replace(path.extname(fileName), "");
 }
@@ -20,7 +18,7 @@ function getRootProjectDir() {
   return process.cwd();
 }
 
-module.exports = {
+export default {
   isFileExist,
   isDirectory,
   getFileNameWithoutExt,

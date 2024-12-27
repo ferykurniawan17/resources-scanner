@@ -1,18 +1,15 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require("fs");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require("path");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const utils = require("./utils");
+import fs from "fs";
+import path from "path";
+import utils from "./utils";
 
-function createJsonFiles(urlsKeysMap, config) {
+function createJsonFiles(urlsKeysMap: any, config: any) {
   const rootProjectDir = utils.getRootProjectDir();
 
   config.sourceFiles = config.sourceFiles || {};
 
   // load existing json files
   const existingJsonFiles = Object.keys(config.sourceFiles).reduce(
-    (acc, key) => {
+    (acc: any, key) => {
       const filePath = path.join(rootProjectDir, config.sourceFiles[key]);
       if (fs.existsSync(filePath)) {
         acc[key] = JSON.parse(fs.readFileSync(filePath, "utf8"));
@@ -29,7 +26,7 @@ function createJsonFiles(urlsKeysMap, config) {
     Object.keys(config.sourceFiles).forEach((locale) => {
       const existingKeys = existingJsonFiles[locale] || {};
 
-      const json = Object.keys(keys).reduce((acc, key) => {
+      const json = Object.keys(keys).reduce((acc: any, key) => {
         acc[key] = existingKeys[key] || key;
         return acc;
       }, {});
@@ -49,6 +46,6 @@ function createJsonFiles(urlsKeysMap, config) {
   });
 }
 
-module.exports = {
+export default {
   createJsonFiles,
 };

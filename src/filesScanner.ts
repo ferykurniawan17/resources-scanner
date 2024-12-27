@@ -1,9 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require("fs");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Parser = require("i18next-scanner").Parser;
+import fs from "fs";
+// @ts-ignore
+import { Parser } from "i18next-scanner";
 
-function scan(pathFile, config) {
+function filelScan(pathFile: any, config: any) {
   const parser = new Parser();
   const content = fs.readFileSync(pathFile, "utf-8");
 
@@ -17,7 +16,7 @@ function scan(pathFile, config) {
         {
           list: config?.i18next?.list ?? ["t", "i18next.t", "i18n.t"],
         },
-        (key, options) => {
+        (key: any, options: any) => {
           parser.set(key, {
             ...options,
             nsSeparator: false,
@@ -37,4 +36,14 @@ function scan(pathFile, config) {
   return {};
 }
 
-module.exports = { scan };
+function scan(files: any, config: any) {
+  const keys = {};
+  files.forEach((file: any) => {
+    const fileKeys = filelScan(file, config);
+    Object.assign(keys, fileKeys);
+  });
+
+  return keys;
+}
+
+export default { scan };

@@ -1,20 +1,15 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require("fs");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require("path");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fileDependencies = require("./fileDependencies");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const filesScanner = require("./filesScanner");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const utils = require("./utils");
+import fs from "fs";
+import path from "path";
+import utils from "./utils";
+import fileDependencies from "./fileDependencies";
+import filesScanner from "./filesScanner";
 
-function getStructure(config) {
+function getStructure(config: any) {
   const rootProjectDir = utils.getRootProjectDir();
 
   const pageFileName = config.pageFileName;
   const whitelistGlobalFiles = config.whitelistGlobalFiles;
-  const pagesGroupFolders = config.folders.map((folder) =>
+  const pagesGroupFolders = config.folders.map((folder: any) =>
     path.join(rootProjectDir, folder)
   );
 
@@ -22,67 +17,71 @@ function getStructure(config) {
   let allGlobalFiles = {};
 
   function getPageFromFolder(
-    pagesGroupFolders,
+    pagesGroupFolders: any,
     currentPages = {},
     currentGlobalFiles = {},
-    config
+    config: any
   ) {
-    const files = fs.readdirSync(pagesGroupFolders);
+    const files: any = fs.readdirSync(pagesGroupFolders);
 
-    const { pageFiles, globalFiles, folders } = files.reduce(
-      (acc, file) => {
-        const filePath = path.join(pagesGroupFolders, file);
-        const isDirectory = utils.isDirectory(filePath);
+    const { pageFiles, globalFiles, folders }: Record<string, any> =
+      files.reduce(
+        (acc: any, file: any) => {
+          const filePath = path.join(pagesGroupFolders, file);
+          const isDirectory = utils.isDirectory(filePath);
 
-        if (isDirectory) {
-          acc.folders.push(filePath);
-        } else {
-          const fileWithoutExt = utils.getFileNameWithoutExt(filePath);
-          const isWhitelistedFile =
-            pageFileName && typeof pageFileName === "string"
-              ? pageFileName === fileWithoutExt
-              : true;
-          const isWhitelistedGroupFile =
-            whitelistGlobalFiles.includes(fileWithoutExt);
+          if (isDirectory) {
+            acc.folders.push(filePath);
+          } else {
+            const fileWithoutExt = utils.getFileNameWithoutExt(filePath);
+            const isWhitelistedFile =
+              pageFileName && typeof pageFileName === "string"
+                ? pageFileName === fileWithoutExt
+                : true;
+            const isWhitelistedGroupFile =
+              whitelistGlobalFiles.includes(fileWithoutExt);
 
-          if (isWhitelistedFile) {
-            let isNeedToInclude = true;
-            if (typeof config.pageFileName === "function") {
-              isNeedToInclude = config.pageFileName(
-                filePath.replace(rootProjectDir, "")
-              );
-            }
+            if (isWhitelistedFile) {
+              let isNeedToInclude = true;
+              if (typeof config.pageFileName === "function") {
+                isNeedToInclude = config.pageFileName(
+                  filePath.replace(rootProjectDir, "")
+                );
+              }
 
-            if (isNeedToInclude) {
+              if (isNeedToInclude) {
+                const files = [
+                  filePath,
+                  ...fileDependencies(filePath, [], config),
+                ];
+                acc.pageFiles = {
+                  ...acc.pageFiles,
+                  [filePath]: {
+                    files,
+                    keys: filesScanner.scan(files, config),
+                  },
+                };
+              }
+            } else if (isWhitelistedGroupFile) {
               const files = [
                 filePath,
                 ...fileDependencies(filePath, [], config),
               ];
-              acc.pageFiles = {
-                ...acc.pageFiles,
-                [filePath]: {
-                  files,
-                  keys: filesScanner.scan(files, config),
-                },
+              acc.globalFiles = {
+                ...acc.globalFiles,
+                files,
+                keys: filesScanner.scan(files, config),
               };
             }
-          } else if (isWhitelistedGroupFile) {
-            const files = [filePath, ...fileDependencies(filePath, [], config)];
-            acc.globalFiles = {
-              ...acc.globalFiles,
-              files,
-              keys: filesScanner.scan(files, config),
-            };
           }
-        }
 
-        return acc;
-      },
-      { pageFiles: {}, globalFiles: {}, folders: [] }
-    );
+          return acc;
+        },
+        { pageFiles: {}, globalFiles: {}, folders: [] }
+      );
 
     let newPages = { ...currentPages };
-    let newGlobalFiles = { ...currentGlobalFiles };
+    let newGlobalFiles: any = { ...currentGlobalFiles };
 
     // if (pageFile) {
     //   newPages[pageFile] = pageFile;
@@ -96,7 +95,7 @@ function getStructure(config) {
       newGlobalFiles[pagesGroupFolders] = globalFiles;
     }
 
-    folders.forEach((folder) => {
+    folders.forEach((folder: any) => {
       const [newPagesFromFolder, newGlobalFilesFromFolder] = getPageFromFolder(
         folder,
         newPages,
@@ -110,7 +109,7 @@ function getStructure(config) {
     return [newPages, newGlobalFiles];
   }
 
-  pagesGroupFolders.forEach((pagesGroupFolder) => {
+  pagesGroupFolders.forEach((pagesGroupFolder: any) => {
     const [pages, globalFiles] = getPageFromFolder(
       pagesGroupFolder,
       allPages,
@@ -124,7 +123,7 @@ function getStructure(config) {
   return { allPages, allGlobalFiles };
 }
 
-function mergeKeys(pagePath, allGlobalFiles) {
+function mergeKeys(pagePath: any, allGlobalFiles: any) {
   const globalKeys = Object.keys(allGlobalFiles).reduce(
     (acc, globalFilePath) => {
       if (pagePath.includes(globalFilePath)) {
@@ -138,7 +137,7 @@ function mergeKeys(pagePath, allGlobalFiles) {
   return globalKeys;
 }
 
-function combineKeys(allPages, allGlobalFiles) {
+function combineKeys(allPages: any, allGlobalFiles: any) {
   const combinedKeys = Object.keys(allPages).reduce((acc, pagePath) => {
     const pageKeys = allPages[pagePath].keys;
     const globalKeys = mergeKeys(pagePath, allGlobalFiles);
@@ -149,12 +148,12 @@ function combineKeys(allPages, allGlobalFiles) {
   return combinedKeys;
 }
 
-function convertFilePathsToUrls(allPages, config) {
+function convertFilePathsToUrls(allPages: any, config: any) {
   const root = utils.getRootProjectDir();
-  const pageUrlsKeysMap = Object.keys(allPages).reduce((acc, pagePath) => {
+  const pageUrlsKeysMap = Object.keys(allPages).reduce((acc: any, pagePath) => {
     const keys = allPages[pagePath];
 
-    config.folders.forEach((folder) => {
+    config.folders.forEach((folder: any) => {
       pagePath = pagePath.replace(`${root}/${folder}`, "");
     });
 
@@ -197,7 +196,7 @@ function convertFilePathsToUrls(allPages, config) {
   return pageUrlsKeysMap;
 }
 
-module.exports = {
+export default {
   getStructure,
   combineKeys,
   convertFilePathsToUrls,

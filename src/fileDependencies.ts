@@ -1,12 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const fs = require("fs");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const path = require("path");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const utils = require("./utils");
+import fs from "fs";
+import path from "path";
+import utils from "./utils";
 
-function getExtentionFile(path, config) {
-  let file = config.exts.find((ext) => {
+function getExtentionFile(path: any, config: any) {
+  let file = config.exts.find((ext: any) => {
     try {
       fs.accessSync(`${path}${ext}`);
       return true;
@@ -17,7 +14,7 @@ function getExtentionFile(path, config) {
 
   if (file) return `${path}${file}`;
 
-  file = config.exts.find((ext) => {
+  file = config.exts.find((ext: any) => {
     try {
       fs.accessSync(`${path}/index${ext}`);
       return true;
@@ -31,14 +28,14 @@ function getExtentionFile(path, config) {
   return null;
 }
 
-function extractFilePaths(code, locationFile, config) {
+function extractFilePaths(code: any, locationFile: any, config: any) {
   // Regular expression untuk mencari import statement dan mengekstrak path file
   const regex = /from\s+['"]([^'"]+)['"]/g;
   // const regex =
   //   /import\s+([^\s]+(?:\s*,\s*[^\s]+)*|\{[^}]*\})\s+from\s+['"]([^'"]+)['"]/g;
 
-  const filePaths = [];
-  let match;
+  const filePaths: Array<string> = [];
+  let match: any;
 
   const root = utils.getRootProjectDir();
 
@@ -66,7 +63,7 @@ function extractFilePaths(code, locationFile, config) {
   return filePaths;
 }
 
-function loadFileDependency(pathFile, paths, config) {
+function loadFileDependency(pathFile: any, paths: any, config: any) {
   const codeString = fs.readFileSync(pathFile, "utf-8");
   const filePaths = extractFilePaths(codeString, pathFile, config);
 
@@ -80,4 +77,4 @@ function loadFileDependency(pathFile, paths, config) {
   return [...filePaths, ...paths];
 }
 
-module.exports = loadFileDependency;
+export default loadFileDependency;
