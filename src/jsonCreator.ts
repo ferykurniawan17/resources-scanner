@@ -3,13 +3,13 @@ import path from "path";
 import utils from "./utils";
 import { Config, KeysMap } from "./type";
 
-function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
+function getExistingJsonFiles(config: Config) {
   const rootProjectDir = utils.getRootProjectDir();
 
   config.sourceFiles = config.sourceFiles || {};
 
   // load existing json files
-  const existingJsonFiles = Object.keys(config.sourceFiles).reduce(
+  return Object.keys(config.sourceFiles).reduce(
     (acc: Record<string, KeysMap>, key) => {
       const filePath = path.join(rootProjectDir, config.sourceFiles[key]);
       if (fs.existsSync(filePath)) {
@@ -27,6 +27,44 @@ function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
     },
     {}
   );
+}
+
+function updateJsonFiles(
+  filePaths: Array<string>,
+  newResources: Record<string, string>,
+  config: Config
+) {
+  // load existing json files
+  const existingJsonFiles = getExistingJsonFiles(config);
+
+  filePaths.forEach((file) => {
+    // read file
+    try {
+      const messages = fs.readFileSync(file, "utf8");
+      const json = JSON.parse(messages);
+      const lang = utils.getLocaleFromResourcePath(file);
+
+      newResources = Object.keys(newResources).reduce((acc, key) => {
+        acc[key] = existingJsonFiles[lang][key] || key;
+        return acc;
+      }, json);
+
+      // overwrite file
+      fs.writeFileSync(file, JSON.stringify(newResources, null, 2));
+    } catch (e) {
+      // yellow color
+      console.log("\x1b[33m%s\x1b[0m", "Failed Load JSON File:", file);
+    }
+  });
+}
+
+function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
+  const rootProjectDir = utils.getRootProjectDir();
+
+  config.sourceFiles = config.sourceFiles || {};
+
+  // load existing json files
+  const existingJsonFiles = getExistingJsonFiles(config);
 
   // create json files for each map keys
   Object.keys(urlsKeysMap).forEach((url) => {
@@ -62,7 +100,6 @@ function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
 
       try {
         fs.writeFileSync(fileCreated, JSON.stringify(json, null, 2));
-        console.log("\x1b[34m%s\x1b[0m", "Created JSON file:", outputFile);
       } catch (e) {
         console.log(
           "\x1b[31m%s\x1b[0m",
@@ -79,4 +116,5 @@ function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
 
 export default {
   createJsonFiles,
+  updateJsonFiles,
 };

@@ -2,12 +2,13 @@ import fs from "fs";
 import path from "path";
 import utils from "./utils";
 import fileDependencies from "./fileDependencies";
-import filesScanner from "./filesScanner";
-import { Config, Files, KeysFileMap, KeysMap } from "./type";
+import { scan } from "./filesScanner";
+import { Config, Files, KeysFileMap, KeysMap, Storage } from "./type";
 
 type Structure = {
   allPages: KeysFileMap;
   allGlobalFiles: KeysFileMap;
+  storages: Storage;
 };
 
 type ResFolder = {
@@ -34,8 +35,6 @@ function getStructure(config: Config): Structure {
     currentGlobalFiles: KeysFileMap = {},
     config: Config
   ): [newPages: KeysFileMap, newGlobalFiles: KeysFileMap] {
-    console.log("\x1b[34m%s\x1b[0m", "Scanning folder", pagesGroupFolders);
-
     const files: Files = fs.readdirSync(pagesGroupFolders);
 
     const { pageFiles, globalFiles, folders }: ResFolder = files.reduce(
@@ -71,7 +70,7 @@ function getStructure(config: Config): Structure {
                 ...acc.pageFiles,
                 [filePath]: {
                   files,
-                  keys: filesScanner.scan(files, config),
+                  keys: scan(files, config),
                 },
               };
             }
@@ -86,7 +85,7 @@ function getStructure(config: Config): Structure {
               ],
               keys: {
                 ...(currentGlobalFiles[pagesGroupFolders]?.keys ?? {}),
-                ...filesScanner.scan(files, config),
+                ...scan(files, config),
               },
             };
           }
@@ -130,49 +129,20 @@ function getStructure(config: Config): Structure {
     allGlobalFiles = Object.assign(allGlobalFiles, globalFiles);
   });
 
-  return { allPages, allGlobalFiles };
+  const storages: Storage = utils.convertKeysFileMapToList(allPages);
+
+  return { allPages, allGlobalFiles, storages };
 }
 
 function convertFilePathsToUrls(
   allPages: Record<string, KeysMap>,
   config: Config
-) {
-  const root = utils.getRootProjectDir();
+): Record<string, KeysMap> {
   const pageUrlsKeysMap = Object.keys(allPages).reduce(
     (acc: Record<string, KeysMap>, pagePath: string) => {
       const keys = allPages[pagePath];
+      const pageUrl = utils.convertSourceFilePathToUrl(pagePath, config);
 
-      config.folders.forEach((folder: string) => {
-        pagePath = pagePath.replace(`${root}/${folder}`, "");
-      });
-
-      let pageUrl = "";
-      if (config?.transformResourceGroupKey) {
-        // remove first slash
-        pagePath = pagePath.replace(/^\//, "");
-        pageUrl = config.transformResourceGroupKey(pagePath);
-        pageUrl = `/${pageUrl}`;
-      } else {
-        pagePath = pagePath.replace(/\.(tsx|js|jsx|ts|mjs)$/, "");
-
-        // remove last section of the path if it is config.pageFileName
-        const pagePathParts = pagePath.split("/");
-        const lastPart = pagePathParts[pagePathParts.length - 1];
-
-        if (config.pageFileName) {
-          if (typeof config.pageFileName === "string") {
-            if (lastPart === config.pageFileName) {
-              pagePathParts.pop();
-            }
-          }
-        }
-
-        if (pagePathParts[pagePathParts.length - 1] === "index")
-          pagePathParts.pop();
-
-        pagePath = pagePathParts.join("/");
-        pageUrl = pagePath.replace(/\\/g, "/");
-      }
       return {
         ...acc,
         [pageUrl]: {

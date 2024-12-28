@@ -3,7 +3,7 @@
 const path = require("path");
 const { Command } = require("commander");
 const pkg = require("../package.json");
-const scanner = require("../dist");
+const scanner = require("../dist/execute");
 
 const program = new Command();
 

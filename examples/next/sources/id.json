@@ -1,0 +1,20 @@
+{
+  "main.pageTitle": "Judul halaman",
+  "main.pageDescription": "Deskripsi halaman",
+  "main.sectionTitle": "Part judul",
+  "about.pageTitle": "Judul halaman tentang",
+  "post.mainPageTitle": "Judul Post halaman utama",
+  "post.detailPageTitle": "Judul Post Detail Page",
+  "header.headerTitle": "Header title",
+  "component.title": "Judul komponen",
+  "component.description": "Deskripsi komponen",
+  "text.wording1": "Ini adalah teks",
+  "text.wording2": "Ini adalah teks lain",
+  "text.wording3": "Ini adalah teks lain",
+  "text.wording4": "Ini adalah teks lain",
+  "text.text1": "Ini adalah teks",
+  "text.text2": "Ini adalah teks lain",
+  "text.text3": "Ini adalah teks lain",
+  "text.text4": "Ini adalah teks lain",
+  "new.wording": "New data - id test"
+}

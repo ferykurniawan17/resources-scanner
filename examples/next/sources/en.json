@@ -1,0 +1,21 @@
+{
+  "main.pageTitle": "Page titlesdsdsdsd",
+  "main.pageDescription": "Page description",
+  "main.sectionTitle": "Section title",
+  "about.pageTitle": "About page title",
+  "post.mainPageTitle": "Main Page Post Title",
+  "post.detailPageTitle": "Detail Page Post Title",
+  "header.headerTitle": "Header title",
+  "component.title": "Component title",
+  "component.description": "Component description",
+  "text.wording1": "This is a aaaaaaa",
+  "text.wording2": "This is another text",
+  "text.wording3": "This is another text",
+  "text.wording4": "This is another text",
+  "text.text1": "This is a text",
+  "text.text2": "This is another text",
+  "text.text3": "This is another text",
+  "text.text4": "This is another text",
+  "new.wording": "New data - AAA",
+  "new.wording2": "New data - AAA"
+}

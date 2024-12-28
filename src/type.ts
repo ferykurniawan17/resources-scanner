@@ -27,6 +27,7 @@ export type Config = {
   alias: Record<string, string>;
   i18next?: I18next;
   transformResourceGroupKey?: TransformResourceGroupKey;
+  hotReload?: boolean;
 };
 
 export type Files = Array<string>;
@@ -39,3 +40,8 @@ export type FilesMap = {
 };
 
 export type KeysFileMap = Record<string, FilesMap>;
+
+export type Storage = {
+  filePages: Record<string, Array<string>>;
+  pageKeys: Record<string, KeysMap>;
+};
