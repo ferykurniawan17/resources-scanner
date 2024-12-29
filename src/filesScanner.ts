@@ -3,7 +3,7 @@ import fs from "fs";
 import { Parser } from "i18next-scanner";
 import { Config } from "./type";
 
-export function scanFile(pathFile: string, config: Config) {
+export function scanFileResources(pathFile: string, config: Config) {
   const parser = new Parser();
   const content = fs.readFileSync(pathFile, "utf-8");
 
@@ -40,7 +40,7 @@ export function scanFile(pathFile: string, config: Config) {
 export function scan(files: Array<string>, config: Config) {
   const keys = {};
   files.forEach((file: string) => {
-    const fileKeys = scanFile(file, config);
+    const fileKeys = scanFileResources(file, config);
     Object.assign(keys, fileKeys);
   });
 

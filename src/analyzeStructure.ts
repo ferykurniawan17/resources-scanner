@@ -3,7 +3,7 @@ import path from "path";
 import utils from "./utils";
 import fileDependencies from "./fileDependencies";
 import { scan } from "./filesScanner";
-import { Config, Files, KeysFileMap, KeysMap, Storage } from "./type";
+import { Config, Files, KeysFileMap, Storage } from "./type";
 
 type Structure = {
   allPages: KeysFileMap;
@@ -134,30 +134,6 @@ function getStructure(config: Config): Structure {
   return { allPages, allGlobalFiles, storages };
 }
 
-function convertFilePathsToUrls(
-  allPages: Record<string, KeysMap>,
-  config: Config
-): Record<string, KeysMap> {
-  const pageUrlsKeysMap = Object.keys(allPages).reduce(
-    (acc: Record<string, KeysMap>, pagePath: string) => {
-      const keys = allPages[pagePath];
-      const pageUrl = utils.convertSourceFilePathToUrl(pagePath, config);
-
-      return {
-        ...acc,
-        [pageUrl]: {
-          ...(acc[pageUrl] ?? {}),
-          ...keys,
-        },
-      };
-    },
-    {}
-  );
-
-  return pageUrlsKeysMap;
-}
-
 export default {
   getStructure,
-  convertFilePathsToUrls,
 };

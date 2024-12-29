@@ -1,4 +1,5 @@
 import fs from "fs";
+// import _ from "lodash";
 import path from "path";
 import { Config, Ext, KeysFileMap, KeysMap, Storage } from "./type";
 
@@ -137,6 +138,29 @@ function convertSourceFilePathToUrl(pagePath: string, config: Config): string {
   return transformResourceGroupKey(pagePath, config);
 }
 
+function convertPageKeyMapToUrlKeyMap(
+  allPages: Record<string, KeysMap>,
+  config: Config
+): Record<string, KeysMap> {
+  const pageUrlsKeysMap = Object.keys(allPages).reduce(
+    (acc: Record<string, KeysMap>, pagePath: string) => {
+      const keys = allPages[pagePath];
+      const pageUrl = convertSourceFilePathToUrl(pagePath, config);
+
+      return {
+        ...acc,
+        [pageUrl]: {
+          ...(acc[pageUrl] ?? {}),
+          ...keys,
+        },
+      };
+    },
+    {}
+  );
+
+  return pageUrlsKeysMap;
+}
+
 function pathToOutputFiles(
   pagePath: string,
   config: Config
@@ -161,6 +185,28 @@ function getLocaleFromResourcePath(path: string) {
   return parts[parts.length - 1].replace(".json", "");
 }
 
+// function jsonDiffKeys(
+//   originalData: Record<string, any>,
+//   newData: Record<string, any>
+// ) {
+//   const filtedKeys = _.filter(
+//     _.keys(originalData),
+//     (key) => !_.isEqual(originalData[key], newData[key])
+//   );
+
+//   return filtedKeys.reduce((acc: Record<string, any>, key) => {
+//     acc[key] = newData[key];
+//     return acc;
+//   }, {});
+// }
+
+// const findOutputPathByKey = (
+//   data: Record<string, KeysMap>,
+//   targetKey: string
+// ) => {
+//   return _.filter(_.keys(data), (filePath) => _.has(data[filePath], targetKey));
+// };
+
 export default {
   isFileExist,
   isDirectory,
@@ -171,7 +217,10 @@ export default {
   combineKeys,
   convertKeysFileMapToList,
   transformResourceGroupKey,
+  convertPageKeyMapToUrlKeyMap,
   convertSourceFilePathToUrl,
   pathToOutputFiles,
   getLocaleFromResourcePath,
+  // jsonDiffKeys,
+  // findOutputPathByKey,
 };

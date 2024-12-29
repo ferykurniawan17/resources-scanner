@@ -1,7 +1,20 @@
 import fs from "fs";
 import path from "path";
+// import _ from "lodash";
 import utils from "./utils";
 import { Config, KeysMap } from "./type";
+
+function getJsonFileResources(filePath: string) {
+  try {
+    const messages = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(messages);
+  } catch (e) {
+    console.log("\x1b[31m%s\x1b[0m", "Failed Load JSON File:", filePath);
+    console.log("\x1b[31m%s\x1b[0m", e);
+  }
+
+  return {};
+}
 
 function getExistingJsonFiles(config: Config) {
   const rootProjectDir = utils.getRootProjectDir();
@@ -13,20 +26,58 @@ function getExistingJsonFiles(config: Config) {
     (acc: Record<string, KeysMap>, key) => {
       const filePath = path.join(rootProjectDir, config.sourceFiles[key]);
       if (fs.existsSync(filePath)) {
-        try {
-          const messages = fs.readFileSync(filePath, "utf8");
-          acc[key] = JSON.parse(messages);
-        } catch (e) {
-          console.log("\x1b[31m%s\x1b[0m", "Failed Load JSON File:", filePath);
-          console.log("\x1b[31m%s\x1b[0m", e);
-
-          process.exit(1);
-        }
+        const messages = getJsonFileResources(filePath);
+        acc[key] = messages;
       }
       return acc;
     },
     {}
   );
+}
+
+function replaceJsonFiles(filePaths: Array<string>, config: Config) {
+  filePaths.forEach((file) => {
+    // read file
+    try {
+      // load existing json files
+      const existingJsonFiles = getExistingJsonFiles(config);
+
+      const messages = fs.readFileSync(file, "utf8");
+      const json = JSON.parse(messages);
+      const lang = utils.getLocaleFromResourcePath(file);
+
+      const newJson = {
+        ...json,
+        ...existingJsonFiles[lang],
+      };
+
+      fs.writeFileSync(file, JSON.stringify(newJson, null, 2));
+    } catch (e) {
+      console.log("\x1b[33m%s\x1b[0m", "Failed Load JSON File:", file);
+    }
+  });
+}
+
+function replaceJsonDiffFiles(
+  filePaths: Array<string>,
+  newResources: Record<string, string>
+) {
+  filePaths.forEach((file) => {
+    // read file
+    try {
+      const messages = fs.readFileSync(file, "utf8");
+      const json = JSON.parse(messages);
+
+      const newJson = {
+        ...json,
+        ...newResources,
+      };
+
+      fs.writeFileSync(file, JSON.stringify(newJson, null, 2));
+    } catch (e) {
+      console.log("\x1b[33m%s\x1b[0m", "Failed Load JSON File:", file);
+    }
+  });
 }
 
 function updateJsonFiles(
@@ -100,6 +151,7 @@ function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
 
       try {
         fs.writeFileSync(fileCreated, JSON.stringify(json, null, 2));
+        console.log("\x1b[36m%s\x1b[0m", "Created JSON File:", outputFile);
       } catch (e) {
         console.log(
           "\x1b[31m%s\x1b[0m",
@@ -117,4 +169,8 @@ function createJsonFiles(urlsKeysMap: Record<string, KeysMap>, config: Config) {
 export default {
   createJsonFiles,
   updateJsonFiles,
+  replaceJsonFiles,
+  replaceJsonDiffFiles,
+  getExistingJsonFiles,
+  getJsonFileResources,
 };

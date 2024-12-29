@@ -2,7 +2,7 @@ type PageFileName = string | ((path: string) => boolean) | undefined;
 
 export type Ext = `.${string}`;
 
-type SourceFiles = Record<string, `${string}.json`>;
+export type SourceFiles = Record<string, `${string}.json`>;
 
 interface Parser {
   parseFuncFromString: (...args: any) => any;

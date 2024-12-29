@@ -3,7 +3,7 @@
 const path = require("path");
 const { Command } = require("commander");
 const pkg = require("../package.json");
-const scanner = require("../dist/execute");
+const execute = require("../dist/execute");
 
 const program = new Command();
 
@@ -27,7 +27,7 @@ console.log(`Using config file: ${configPath}`);
 
 try {
   const config = require(configPath);
-  scanner(config);
+  execute(config);
 } catch (error) {
   console.error(error);
   console.error(`Failed to load config file: ${configPath}`);

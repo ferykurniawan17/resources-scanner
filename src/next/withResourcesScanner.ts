@@ -1,11 +1,10 @@
-import { NextConfig } from "next";
-import utils from "../utils";
 import path from "path";
+import { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
+import utils from "../utils";
 import jsonCreator from "../jsonCreator";
 import { Config } from "../type";
 import { collector } from "../tasks";
-import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
-import JsonWatcheer from "./JsonWatcher";
 import JsonWatcher from "./JsonWatcher";
 
 export default function withResourcesScanner(customConfig: NextConfig) {

@@ -3,6 +3,10 @@
   "description": "grouping resources by page to splited json file",
   "version": "0.1.5",
   "main": "dist/index.js",
+  "module": "dist/index.js",
+  "bin": {
+    "resources-scanner": "./bin/cli.js"
+  },
   "scripts": {
     "build": "tsc && babel dist --out-dir dist",
     "dev": "tsc -w",
@@ -22,9 +26,6 @@
     "commander": "^12.1.0",
     "i18next-scanner": "^4.6.0",
     "next": "^15.1.3"
-  },
-  "bin": {
-    "resources-scanner": "./bin/cli.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.26.4",

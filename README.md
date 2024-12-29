@@ -23,7 +23,23 @@ Examples: [Here](https://github.com/ferykurniawan17/resources-scanner/tree/main/
 ## Usage CLI
 
 ```sh
-resources-scanner --config your-config-path.js
+npx resources-scanner --config your-config-path.js
+```
+
+## Usage NextJs
+
+next.config.ts
+
+```js
+import type { NextConfig } from "next";
+import { withResourcesScanner } from "resources-scanner";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  reactStrictMode: true,
+};
+
+export default withResourcesScanner(nextConfig);
 ```
 
 ## Results

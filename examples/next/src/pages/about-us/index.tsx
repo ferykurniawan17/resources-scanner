@@ -10,6 +10,9 @@ export default function Home() {
       <h1>{t("text.wording1")}</h1>
       <h1>{t("text.wording2")}</h1>
       <h1>{t("text.wording3")}</h1>
+      <h1>{t("text.wording4")}</h1>
+      <h1>{t("text.wording5")}</h1>
+      <h1>{t("text.wording6")}</h1>
     </>
   );
 }

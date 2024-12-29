@@ -8,9 +8,6 @@ const Header = () => {
       <h1>{t("header.wording3")}</h1>
       <h1>{t("header.wording4")}</h1>
       <h1>{t("header.wording")}</h1>
-      <h1>{t("xxxx.wording")}</h1>
-      <h1>{t("aaaaaa.wording")}</h1>
-      <h1>{t("cccccc.ddddddddd")}</h1>
     </header>
   );
 };
