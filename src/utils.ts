@@ -185,6 +185,49 @@ function getLocaleFromResourcePath(path: string) {
   return parts[parts.length - 1].replace(".json", "");
 }
 
+function getResourcesConfig(): Config {
+  const rootDir = getRootProjectDir();
+  const filePathConfig = path.resolve(rootDir, "resources-scanner-config.js");
+
+  if (!isFileExist(filePathConfig)) {
+    console.error("resources-scanner-config.js not found");
+    return {
+      folders: [],
+      exts: [],
+      sourceFiles: {},
+      output: "",
+      pageFileName: "",
+      whitelistGlobalFiles: [],
+      alias: {},
+    };
+  }
+
+  const resourcesScannerConfig: Config = require(filePathConfig);
+
+  return resourcesScannerConfig;
+}
+
+function getSourceLocales(): Array<string> {
+  const rootDir = getRootProjectDir();
+  const filePathConfig = path.resolve(rootDir, "resources-scanner-config.js");
+
+  let resourcesScannerConfig: Config = {
+    folders: [],
+    exts: [],
+    sourceFiles: {},
+    output: "",
+    pageFileName: "",
+    whitelistGlobalFiles: [],
+    alias: {},
+  };
+  if (!isFileExist(filePathConfig)) {
+    return Object.keys(resourcesScannerConfig.sourceFiles);
+  }
+
+  resourcesScannerConfig = require(filePathConfig);
+  return Object.keys(resourcesScannerConfig.sourceFiles);
+}
+
 // function jsonDiffKeys(
 //   originalData: Record<string, any>,
 //   newData: Record<string, any>
@@ -221,6 +264,8 @@ export default {
   convertSourceFilePathToUrl,
   pathToOutputFiles,
   getLocaleFromResourcePath,
+  getResourcesConfig,
+  getSourceLocales,
   // jsonDiffKeys,
   // findOutputPathByKey,
 };
